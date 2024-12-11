@@ -1,9 +1,23 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter import filedialog
+
+def select_file():
+    # Открывает диалоговое окно для выбора файла
+    filepath = filedialog.askopenfilename(
+        title="Выберите PDF файл",
+        filetypes=[("PDF файлы", "*.pdf")]
+    )
+    if filepath:
+        entry_file_path.delete(0, tk.END)  # Очищает текущее содержимое поля
+        entry_file_path.insert(0, filepath)  # Вставляет выбранный путь в поле
+
 
 def Pusk():
     # Получаем введённое имя файла и выбранный метод обработки
-    file_name = entry_file_name.get()
+#    file_name = entry_file_name.get()
+    file_name = entry_file_path.get()
+
     selected_method = combo_methods.get()
     
     # Проверяем, введено ли имя файла и выбран ли метод
@@ -23,13 +37,30 @@ def Pusk():
 root = tk.Tk()
 root.title("Интерфейс обработки PDF")
 
-# Поле для ввода имени файла
+###################
+# Поле для выбора файла через диалог
 frame_file = tk.Frame(root)
+frame_file.pack(pady=10)
+tk.Label(frame_file, text="Выберите файл:").pack(side=tk.LEFT, padx=5)
+
+# Текстовое поле для отображения выбранного пути
+entry_file_path = tk.Entry(frame_file, width=50)
+entry_file_path.pack(side=tk.LEFT, padx=5)
+
+# Кнопка для вызова браузера файлов
+btn_browse = tk.Button(frame_file, text="Обзор...", command=select_file)
+btn_browse.pack(side=tk.LEFT, padx=5)
+
+#########################
+
+
+# Поле для ввода имени файла
+"""frame_file = tk.Frame(root)
 frame_file.pack(pady=10)
 
 tk.Label(frame_file, text="Введите имя файла:").pack(side=tk.LEFT, padx=5)
 entry_file_name = tk.Entry(frame_file, width=50)
-entry_file_name.pack(side=tk.LEFT, padx=5)
+entry_file_name.pack(side=tk.LEFT, padx=5)"""
 
 # Выпадающий список для выбора метода обработки
 frame_method = tk.Frame(root)

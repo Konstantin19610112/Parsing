@@ -3,6 +3,7 @@ import pdfplumber
 from PyPDF2 import PdfReader, PdfWriter
 from PyPDF4 import PdfFileReader, PdfFileWriter
 from pdfminer.high_level import extract_text
+from pathlib import Path
 
 def dejstvie(file_pdf, programma_obrabotki, method_obrabotki):
     try:
@@ -22,6 +23,7 @@ def dejstvie(file_pdf, programma_obrabotki, method_obrabotki):
                 save_result("output_trimmed.pdf", writer, is_pdf=True)
         
         elif programma_obrabotki == 2:  # PyMuPDF (fitz)
+            
             pdf = fitz.open(file_pdf)
             if method_obrabotki == 1:  # Извлечь текст
                 text = ""
@@ -39,7 +41,8 @@ def dejstvie(file_pdf, programma_obrabotki, method_obrabotki):
                         with open(image_filename, "wb") as f:
                             f.write(image_bytes)
             else:
-
+                start_page = int(input('start_page = '))
+                end_page = int(input('end_page = '))
                 doc = pdf 
                 output_pdf = 'pdf_urez.pdf'
 
@@ -53,7 +56,7 @@ def dejstvie(file_pdf, programma_obrabotki, method_obrabotki):
                 # Сохраняем новый PDF
                 new_doc.save(output_pdf)
                 new_doc.close()
-                doc.close()
+   #             doc.close()
 
                 print(f"Страницы с {start_page} по {end_page} сохранены в {output_pdf}.")
 
@@ -61,6 +64,7 @@ def dejstvie(file_pdf, programma_obrabotki, method_obrabotki):
 
             pdf.close()
 
+ 
         elif programma_obrabotki == 3:  # pdfplumber
             with pdfplumber.open(file_pdf) as pdf:
                 if method_obrabotki == 1:  # Извлечь текст
@@ -101,4 +105,8 @@ def save_result(filename, content, is_pdf=False):
 file_pdf = "ASME Sec II-D-Metric.pdf"
 programma_obrabotki = 2  # PyMuPDF (fitz)
 method_obrabotki = 1  # Извлечь текст
-dejstvie(file_pdf, programma_obrabotki, method_obrabotki)
+#method_obrabotki = 4  # Урезать документ
+##pdf_full_name = r"C:\Users\АСУС\Documents\Natasha\together\Parsing_pdf\Predvar_rabota_s_dok\Parsing\Predvar_rabota_s_dok\PDF\ASME Sec II-D-Metric.pdf"
+pdf_full_name = r"C:\Users\АСУС\Documents\Natasha\together\Parsing_pdf\Predvar_rabota_s_dok\Parsing\Predvar_rabota_s_dok\pdf_urez.pdf"
+dejstvie(pdf_full_name, programma_obrabotki, method_obrabotki)
+input('End Program')

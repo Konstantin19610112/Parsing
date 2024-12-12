@@ -1,52 +1,3 @@
-import PyPDF2
-import pdfplumber
-import fitz  # PyMuPDF
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
-
-filename = "Крайко А.Н. Краткий курс теоретической газовой динамики. 2007.pdf"
-#filename = 'ASME Sec II-D-Metric.pdf'
-
-i = int(input('i = '))
-
-if i == 1:
-    with open(filename, "rb") as file:
-        reader = PyPDF2.PdfReader(file)
-        number_of_pages = len(reader.pages)
-        print(f"Количество страниц в документе: {number_of_pages}")
-elif i == 2:
-
-    with pdfplumber.open(filename) as pdf:
-        number_of_pages = len(pdf.pages)
-        print(f"Количество страниц в документе: {number_of_pages}")
-
-elif i == 3:
-
-    doc = fitz.open(filename)
-    number_of_pages = doc.page_count
-    print(f"Количество страниц в документе: {number_of_pages}")
-    doc.close()
-
-else:
-    with open(filename, "rb") as file:
-        parser = PDFParser(file)
-        document = PDFDocument(parser)
-        number_of_pages = document.num_pages
-        print(f"Количество страниц в документе: {number_of_pages}")
-
-
-### 5. **reportlab**
-
-#Хотя `reportlab` в первую очередь предназначен для создания PDF, его можно использовать для получения количества страниц в процессе создания, 
-#о не для анализа существующего PDF. Поэтому он не подходит для этой задачи.
-
-### Выбор библиотеки
-
-#- **PyPDF2** и **pdfplumber** — популярные и простые в использовании для основных задач.
-#- **PyMuPDF** предлагает более широкие возможности для манипуляции и анализа PDF-документов.
-#- **pdfminer** более сложен, но может быть полезен для извлечения текста и метаданных.
-
-
 import pandas as pd
 from PyPDF2 import PdfReader
 import fitz  # PyMuPDF
@@ -115,29 +66,34 @@ def count_pages_all_methods(pdf_path):
     results.append((l, f'{t5 - t4:.2f}'))
     return tuple(results)
 
+def list_pdf_files():
+    # Получаем текущую директорию, где находится скрипт
+    script_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Список PDF файлов
+    # Формируем путь к поддиректории PDF
+    pdf_directory = os.path.join(script_directory, 'PDF')
 
-directory = os.getcwd()  # Замените на путь к вашей директории
-pdf_files = []
-Number_of_pages = []
+    # Проверяем, существует ли поддиректория PDF
+    if not os.path.exists(pdf_directory):
+        print(f"Поддиректория 'PDF' не найдена: {pdf_directory}")
+        return []
 
-# Обход директории и вложенных папок
-for root, dirs, files in os.walk(directory):
-    for file in files:
-        if file.endswith(".pdf"):
-            # Добавляем полный путь к файлу в список
-#            pdf_files.append(os.path.join(root, file))
-            pdf_files.append(file)
+    # Составляем список полных путей к PDF-файлам
+    pdf_files = [os.path.join(pdf_directory, file) for file in os.listdir(pdf_directory) if file.endswith('.pdf')]
 
+    return pdf_files
+
+
+pdf_files = list_pdf_files()
 
 
 
 # Создание общего списка
 results_list = []
 for pdf_file in pdf_files:
+    pdf_short = os.path.basename(pdf_file)
     page_counts = count_pages_all_methods(pdf_file)
-    results_list.append((pdf_file, *page_counts))
+    results_list.append((pdf_short, *page_counts))
 
 # Создание DataFrame
 columns = ["File Name", "PyPDF2", "PyMuPDF", "pdfplumber", "PDFMiner", "PyPDF4"]
